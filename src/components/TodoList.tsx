@@ -1,8 +1,12 @@
 import { useAppSelector } from "../hook/reduxHooks.ts";
 import TodoItem from "./TodoItem.tsx";
+import { TodoType } from "../types";
 
-const TodoList = () => {
-  const todos = useAppSelector(state => state.todos.todos);
+type TodoListProps = {
+  renderedTodos: TodoType[]
+}
+
+const TodoList = ({ renderedTodos }: TodoListProps) => {
   const status = useAppSelector(state => state.todos.status);
   const error = useAppSelector(state => state.todos.error);
 
@@ -16,9 +20,9 @@ const TodoList = () => {
 
   return (
     <ul className="flex flex-col gap-2">
-      {todos.map(item => (
+      {renderedTodos.map(item => (
         <li key={item.id}>
-          <TodoItem isDone={item.isDone} text={item.text}/>
+          <TodoItem id={item.id} isDone={item.isDone} text={item.text}/>
         </li>
       ))}
     </ul>

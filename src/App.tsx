@@ -1,16 +1,33 @@
 import AddTodo from "./components/AddTodo.tsx";
-import { useEffect } from "react";
-import { useAppDispatch } from "./hook/reduxHooks.ts";
-import { getTodos } from "./store/slices/todosSlice.ts";
+import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "./hook/reduxHooks.ts";
+import { deleteTodo, getTodos } from "./store/slices/todosSlice.ts";
 import TodoList from "./components/TodoList.tsx";
+import { TodoType } from "./types";
+import Tabs from "./components/Tabs.tsx";
 
 const App = () => {
+  const todos = useAppSelector(state => state.todos.todos);
+  const [renderedTodos, setRenderedTodos] = useState<TodoType[]>([]);
+  const [itemsLeft, setItemsLeft] = useState<number>(0);
   const dispatch = useAppDispatch();
-  const active = true;
+
+  const handleDeleteAllCompletedTodos = async () => {
+    const completedTodos = todos.filter(elem => elem.isDone);
+    for (const todo of completedTodos) {
+      await dispatch(deleteTodo(todo.id));
+    }
+    dispatch(getTodos());
+  }
 
   useEffect(() => {
     dispatch(getTodos());
   }, []);
+
+  useEffect(() => {
+    setRenderedTodos(todos)
+    setItemsLeft(todos.filter(elem => !elem.isDone).length)
+  }, [todos])
 
   return (
     <div className="grid place-content-center">
@@ -18,22 +35,15 @@ const App = () => {
       <div
         className="w-full sm:min-w-[500px] border-gray-200 dark:border-gray-500 border rounded-sm shadow-2xl dark:shadow-gray-200/10">
         <AddTodo/>
-        <TodoList/>
+        <TodoList renderedTodos={renderedTodos}/>
         <div className="p-2 flex items-center justify-between gap-2 text-sm text-black/80 dark:text-white/80">
-          <p>2 items left</p>
-          <div className="flex gap-2 justify-between">
-            <button type="button" aria-label="all"
-                    className={`py-1 px-2 rounded-sm border ${active && "border-orange-200/50"}`}>
-              All
-            </button>
-            <button type="button" aria-label="active">
-              Active
-            </button>
-            <button type="button" aria-label="completed">
-              Completed
-            </button>
-          </div>
-          <button type="button" aria-label="clear completed">
+          <p>{itemsLeft} items left</p>
+          <Tabs todos={todos} setItemsLeft={setItemsLeft} setRenderedTodos={setRenderedTodos}/>
+          <button
+            onClick={handleDeleteAllCompletedTodos}
+            type="button"
+            aria-label="clear completed"
+          >
             Clear completed
           </button>
         </div>

@@ -1,5 +1,5 @@
 export type TodoType = {
-  id: string,
+  id: number,
   text: string,
   isDone: boolean,
 }
@@ -11,3 +11,5 @@ export type TodoResponseType = {
 export type AxiosKnownErrorType = {
   message: string;
 };
+
+export type TodoUpdateIsDone = Omit<TodoType, "text">;
