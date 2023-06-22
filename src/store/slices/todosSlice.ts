@@ -5,7 +5,7 @@ import { BASE_URL_TODOS, BASE_URL_TODOS_BY_ID } from "../../utils/constants.ts";
 import { handleRequest } from "../../api/api.ts";
 import { getRandomInt } from "../../utils/getRandomInt.ts";
 
-export const getTodos = createAsyncThunk<TodoType[], undefined, { rejectValue: string }>(
+export const getTodos = createAsyncThunk<TodoType[], void, { rejectValue: string }>(
   'todos/getTodos',
   async (_, { rejectWithValue }) => {
     const request = axios(BASE_URL_TODOS);
@@ -44,7 +44,7 @@ export const toggleStatusIsDone = createAsyncThunk<TodoType, TodoUpdateIsDone, {
   }
 )
 
-type TodoState = {
+export type TodoState = {
   todos: TodoType[],
   status: "init" | "loading" | "success" | "error";
   error: string | null | undefined;
